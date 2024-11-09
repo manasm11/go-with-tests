@@ -6,3 +6,7 @@ func Sum(nums []int) int {
   }
   return result
 }
+
+func SumAll(a, b []int) []int {
+  return []int{Sum(a), Sum(b)}
+}
