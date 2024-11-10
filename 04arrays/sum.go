@@ -7,6 +7,10 @@ func Sum(nums []int) int {
   return result
 }
 
-func SumAll(a, b []int) []int {
-  return []int{Sum(a), Sum(b)}
+func SumAll(arrs...  []int) []int {
+  result := []int{}
+  for _, arr := range arrs {
+    result = append(result, Sum(arr))
+  }
+  return result
 }

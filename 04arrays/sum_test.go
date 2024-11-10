@@ -17,24 +17,37 @@ func TestSum(t *testing.T) {
 }
 
 func TestSumAll(t *testing.T) {
-
-	got := SumAll([]int{1, 3}, []int{0, 9})
-	want := []int{4, 9}
-
-	if !sliceEqual(t, got, want) {
-		t.Errorf("got %d want %d", got, want)
-	}
-}
-
-func sliceEqual(t testing.TB, a, b []int) bool {
-  t.Helper()
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
+  // helper function
+	sliceEqual := func(t testing.TB, a, b []int) bool {
+		t.Helper()
+		if len(a) != len(b) {
 			return false
 		}
+		for i := range a {
+			if a[i] != b[i] {
+				return false
+			}
+		}
+		return true
 	}
-	return true
+
+  // test summing two slices
+	t.Run("sum two slices", func(t *testing.T) {
+		got := SumAll([]int{1, 3}, []int{0, 9, 1})
+		want := []int{4, 10}
+
+		if !sliceEqual(t, got, want) {
+			t.Errorf("got %d want %d", got, want)
+		}
+	})
+
+  // test summing three slices
+	t.Run("sum three slices", func(t *testing.T) {
+		got := SumAll([]int{1, 3}, []int{0, 9}, []int{5, 8})
+		want := []int{4, 9, 13}
+
+		if !sliceEqual(t, got, want) {
+			t.Errorf("got %d want %d", got, want)
+		}
+	})
 }
