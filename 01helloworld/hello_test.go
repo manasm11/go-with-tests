@@ -38,12 +38,11 @@ func TestHello(t *testing.T) {
 		want := "Bonjour, Akanksha"
 		assertCorrectMessage(t, got, want)
 	})
-
 }
 
-func assertCorrectMessage(t testing.TB, got, want string) {
+func assertCorrectMessage[T comparable](t testing.TB, got, want T) {
 	t.Helper()
 	if got != want {
-		t.Errorf("got %q want %q", got, want)
+		t.Errorf("got '%v' want '%v'", got, want)
 	}
 }
