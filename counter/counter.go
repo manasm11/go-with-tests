@@ -14,3 +14,7 @@ func (c *Counter) Inc() {
 }
 
 func (c *Counter) Value() int { return c.v }
+
+func NewCounter() *Counter {
+  return &Counter{}
+}
