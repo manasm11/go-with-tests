@@ -2,6 +2,7 @@ package walk
 
 import (
 	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -49,6 +50,36 @@ func TestWalk(t *testing.T) {
 				Profile{33, "London"}},
 			[]string{"Chris", "London"},
 		},
+		{
+			"pointers to things",
+			&Person{"Chris",
+				Profile{33, "London"}},
+			[]string{"Chris", "London"},
+		},
+		{
+			"slices",
+			[]Profile{
+				{33, "London"},
+				{34, "Reykjavík"},
+			},
+			[]string{"London", "Reykjavík"},
+		},
+		{
+			"arrays",
+			[2]Profile{
+				{33, "London"},
+				{34, "Reykjavík"},
+			},
+			[]string{"London", "Reykjavík"},
+		},
+		{
+			"maps",
+			map[string]string{
+				"Sheep": "Baa",
+				"Cow":   "Moo",
+			},
+			[]string{"Baa", "Moo"},
+		},
 	}
 
 	for _, test := range cases {
@@ -57,7 +88,7 @@ func TestWalk(t *testing.T) {
 			walk(test.Input, func(input string) {
 				got = append(got, input)
 			})
-
+			slices.Sort(got)
 			if !reflect.DeepEqual(got, test.ExpectedCalls) {
 				t.Errorf("got %v want %v", got, test.ExpectedCalls)
 			}
