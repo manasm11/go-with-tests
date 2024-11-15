@@ -2,7 +2,6 @@ package walk
 
 import (
 	"reflect"
-	"slices"
 	"testing"
 )
 
@@ -72,14 +71,6 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"London", "Reykjavík"},
 		},
-		{
-			"maps",
-			map[string]string{
-				"Sheep": "Baa",
-				"Cow":   "Moo",
-			},
-			[]string{"Baa", "Moo"},
-		},
 	}
 
 	for _, test := range cases {
@@ -88,10 +79,70 @@ func TestWalk(t *testing.T) {
 			walk(test.Input, func(input string) {
 				got = append(got, input)
 			})
-			slices.Sort(got)
 			if !reflect.DeepEqual(got, test.ExpectedCalls) {
 				t.Errorf("got %v want %v", got, test.ExpectedCalls)
 			}
 		})
 	}
+
+	t.Run("with maps", func(t *testing.T) {
+		aMap := map[string]string{
+			"Sheep": "Baa",
+			"Cow":   "Moo",
+		}
+		var got []string
+		walk(aMap, func(input string) {
+			got = append(got, input)
+		})
+
+		assertContains(t, got, "Moo")
+		assertContains(t, got, "Baa")
+	})
+
+	t.Run("with channels", func(t *testing.T) {
+		aChannel := make(chan Profile)
+
+		go func() {
+			aChannel <- Profile{33, "Berlin"}
+			aChannel <- Profile{34, "Katowice"}
+			close(aChannel)
+		}()
+
+		var got []string
+		want := []string{"Berlin", "Katowice"}
+
+		walk(aChannel, func(input string) {
+			got = append(got, input)
+		})
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
+		}
+	})
+
+  t.Run("with functions", func(t *testing.T) {
+    aFunction := func()(Profile, Profile) {
+      return Profile{33, "Berlin"}, Profile{34, "Katowice"}
+    }
+
+    var got []string
+    want := []string{"Berlin", "Katowice"}
+
+    walk(aFunction, func(input string) {
+      got = append(got, input)
+    })
+
+    if !reflect.DeepEqual(got, want) {
+      t.Errorf("got %v want %v", got, want)
+    }
+  })
+}
+
+func assertContains(t testing.TB, strings []string, str string) {
+	t.Helper()
+	for _, s := range strings {
+		if s == str {
+			return
+		}
+	}
+	t.Errorf("expected %v to contain %q but didn't", strings, str)
 }
